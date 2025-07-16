@@ -27,3 +27,4 @@ CMakeLists.txt.user*
 .vscode
 /cmake-build*
 .cache
+/usr
