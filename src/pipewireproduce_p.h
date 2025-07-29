@@ -130,6 +130,7 @@ public:
     std::thread m_audioThread;
     std::atomic_bool m_passthroughRunning = false;
     std::atomic_bool m_outputRunning = false;
+    std::atomic_bool m_audioRunning = false;
 
     std::condition_variable m_passthroughCondition;
     std::mutex m_passthroughMutex;
@@ -151,6 +152,7 @@ public:
     pw_stream *m_audioStream = nullptr;
     AVCodecContext *m_audioCodecContext = nullptr;
     AVFormatContext *m_avFormatContext = nullptr;
+    AVFormatContext *m_audioFormatContext = nullptr;
     int m_sampleRate = 44100;
     int m_channels = 2;
 
