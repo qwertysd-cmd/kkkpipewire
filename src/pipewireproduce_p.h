@@ -1,8 +1,8 @@
 /*
-    SPDX-FileCopyrightText: 2023 Aleix Pol Gonzalez <aleixpol@kde.org>
-
-    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
-*/
+ *  SPDX-FileCopyrightText: 2023 Aleix Pol Gonzalez <aleixpol@kde.org>
+ *
+ *  SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+ */
 
 #pragma once
 
@@ -10,10 +10,12 @@
 #include <epoxy/egl.h>
 
 extern "C" {
-#include <pipewire/pipewire.h>
-#include <spa/param/format-utils.h>
-#include <spa/param/props.h>
-#include <spa/param/video/format-utils.h>
+    #include <pipewire/pipewire.h>
+    #include <spa/param/format-utils.h>
+    #include <spa/param/props.h>
+    #include <spa/param/video/format-utils.h>
+    #include <libavcodec/avcodec.h>
+    #include <libavformat/avformat.h>
 }
 
 #include <QFile>
@@ -47,6 +49,8 @@ class CustomAVFrame;
 class Encoder;
 class PipeWireReceiveEncodedThread;
 
+static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt);
+
 class PipeWireProduce : public QObject
 {
     Q_OBJECT
@@ -73,13 +77,8 @@ public:
     }
 
     virtual void processPacket(AVPacket *packet) = 0;
-    virtual bool setupFormat()
-    {
-        return true;
-    }
-    virtual void cleanup()
-    {
-    }
+    virtual bool setupFormat();
+    virtual void cleanup();
 
     void stateChanged(pw_stream_state state);
     void setupStream();
@@ -110,6 +109,7 @@ public:
 
     uint m_fd;
     Fraction m_frameRate;
+    QString m_output;
 
     std::optional<quint8> m_quality;
 
@@ -127,8 +127,7 @@ public:
 
     std::thread m_passthroughThread;
     std::thread m_outputThread;
-    // Can't use jthread directly as it's not available in libc++ yet,
-    // so manually handle the stop source.
+    std::thread m_audioThread;
     std::atomic_bool m_passthroughRunning = false;
     std::atomic_bool m_outputRunning = false;
 
@@ -144,10 +143,16 @@ public:
     std::atomic_int m_pendingFilterFrames = 0;
     std::atomic_int m_pendingEncodeFrames = 0;
 
-    // Controls how many frames we can push into ffmpeg's encoding stream
     std::atomic_int m_maxPendingFrames = 50;
 
     Fraction m_maxFramerate = {60, 1};
+
+    pw_main_loop *m_loop = nullptr;
+    pw_stream *m_audioStream = nullptr;
+    AVCodecContext *m_audioCodecContext = nullptr;
+    AVFormatContext *m_avFormatContext = nullptr;
+    int m_sampleRate = 44100;
+    int m_channels = 2;
 
 Q_SIGNALS:
     void producedFrames();

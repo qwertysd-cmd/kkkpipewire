@@ -144,8 +144,9 @@ add_library(KPipeWireRecord ${kpipewirerecord_SRCS}
 target_link_libraries(KPipeWireRecord PUBLIC KPipeWire
     PRIVATE Qt::Core Qt::Gui KF6::CoreAddons KPipeWireDmaBuf
     PkgConfig::AVCodec PkgConfig::AVUtil PkgConfig::AVFormat PkgConfig::AVFilter PkgConfig::GBM PkgConfig::SWScale
-    epoxy::epoxy Libdrm::Libdrm Qt::GuiPrivate
+    PkgConfig::PipeWire epoxy::epoxy Libdrm::Libdrm Qt::GuiPrivate -pthread
 )
+target_include_directories(KPipeWireRecord PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${PipeWire_INCLUDE_DIRS})
 
 ecm_generate_headers(KPipeWireRecord_HEADERS
   HEADER_NAMES
@@ -167,7 +168,6 @@ install(FILES
 
 install(TARGETS KPipeWire KPipeWireRecord KPipeWireDmaBuf EXPORT KPipeWireTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
-
 ecm_setup_version(PROJECT VARIABLE_PREFIX KPIPEWIRE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kpipewire_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPipeWireConfigVersion.cmake"
@@ -184,7 +184,6 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KPipeWireConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/KPipeWireConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
-
 
 #################
 # Declarative

@@ -1,8 +1,8 @@
 /*
-    SPDX-FileCopyrightText: 2022 Aleix Pol Gonzalez <aleixpol@kde.org>
+ S PDX-FileCopyrightText: 2022 Al*eix Pol Gonzalez <aleixpol@kde.org>
 
-    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
-*/
+ SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+ */
 
 #include "pipewirerecord.h"
 #include "encoder_p.h"
@@ -19,9 +19,9 @@
 
 #include <unistd.h>
 extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavutil/timestamp.h>
+    #include <libavcodec/avcodec.h>
+    #include <libavformat/avformat.h>
+    #include <libavutil/timestamp.h>
 }
 
 #undef av_err2str
@@ -55,8 +55,8 @@ static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 }
 
 PipeWireRecord::PipeWireRecord(QObject *parent)
-    : PipeWireBaseEncodedStream(parent)
-    , d(new PipeWireRecordPrivate)
+: PipeWireBaseEncodedStream(parent)
+, d(new PipeWireRecordPrivate)
 {
 }
 
@@ -93,8 +93,8 @@ QString PipeWireRecord::extension() const
 }
 
 PipeWireRecordProduce::PipeWireRecordProduce(PipeWireBaseEncodedStream::Encoder encoder, uint nodeId, uint fd, const Fraction &framerate, const QString &output)
-    : PipeWireProduce(encoder, nodeId, fd, framerate)
-    , m_output(output)
+: PipeWireProduce(encoder, nodeId, fd, framerate)
+, m_output(output)
 {
 }
 
@@ -162,7 +162,6 @@ void PipeWireRecordProduce::aboutToEncode(PipeWireFrame &frame)
 
     if (m_cursor.position && !m_cursor.texture.isNull()) {
         auto image = frame.dataFrame->toImage();
-        // Do not copy the image if it's already ours
         if (m_frameWithoutMetadataCursor.dataFrame->cleanup != frame.dataFrame->cleanup) {
             m_frameWithoutMetadataCursor.dataFrame = frame.dataFrame->copy();
         }
