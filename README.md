@@ -1,3 +1,6 @@
+# KKKPipewire
+everything below + audio support for KPipeWireRecord
+
 # KPipeWire
 
 Offers a set of convenient classes to use PipeWire (https://pipewire.org/) in Qt projects.
